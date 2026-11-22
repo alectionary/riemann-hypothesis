@@ -84,7 +84,7 @@ theorem support_kern_subset {a r : ℝ} (hr : 0 < r) : support (kern a r) ⊆ Ic
 theorem kern_le {a : ℝ} (ha : 0 ≤ a) (r t : ℝ) : kern a r t ≤ a := by
   unfold kern indicator
   split_ifs with ht
-  · have h1 : exp (-a * t) ≤ 1 := exp_le_one_iff.2 (by nlinarith [mem_Ici.1 ht])
+  · have h1 : exp (-a * t) ≤ 1 := exp_le_one_iff.2 (by linarith [mul_nonneg ha (mem_Ici.1 ht)])
     calc a * exp (-a * t) * cutoff r t ≤ a * 1 * 1 := by
           gcongr
           · exact cutoff_nonneg r t
@@ -210,7 +210,7 @@ theorem deriv_cutoff_nonpos {r : ℝ} (hr : 0 < r) (t : ℝ) : deriv (cutoff r) 
 theorem rem_nonneg {a r : ℝ} (hr : 0 < r) (t : ℝ) : 0 ≤ rem a r t := by
   unfold rem
   have := deriv_cutoff_nonpos hr t
-  nlinarith [exp_pos (-a * t)]
+  linarith [mul_le_mul_of_nonneg_left this (exp_pos (-a * t)).le]
 
 theorem integrable_rem {a r : ℝ} (hr : 0 < r) : Integrable (rem a r) :=
   (contDiff_rem a r).continuous.integrable_of_hasCompactSupport (hasCompactSupport_rem hr)
@@ -237,9 +237,9 @@ theorem integral_rem_le {a r : ℝ} (ha : 0 ≤ a) (hr : 0 < r) : ∫ t, rem a r
         refine integral_mono (integrable_rem hr) (hint.neg.const_mul _) fun t => ?_
         by_cases ht : t ∈ Icc r (2 * r)
         · unfold rem
-          have h1 : exp (-a * t) ≤ exp (-a * r) := exp_le_exp.2 (by nlinarith [ht.1])
+          have h1 : exp (-a * t) ≤ exp (-a * r) := exp_le_exp.2 (by linarith [mul_le_mul_of_nonneg_left ht.1 ha])
           have h2 := deriv_cutoff_nonpos hr t
-          nlinarith
+          linarith [mul_le_mul_of_nonneg_right h1 (neg_nonneg.2 h2)]
         · rw [rem_eq_zero hr ht]
           have := iteratedDeriv_deriv_cutoff_eq_zero hr ht 0
           simp only [iteratedDeriv_zero] at this
@@ -307,7 +307,7 @@ theorem abs_mul_norm_khat_le {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (ξ : ℝ) :
       rw [norm_mul, hF, Complex.norm_exp_ofReal_mul_I, one_mul, Complex.norm_real,
         Real.norm_eq_abs, abs_of_nonneg (rem_nonneg hr t)]
     rw [this]
-    exact (integral_rem_le ha.le hr).trans (exp_le_one_iff.2 (by nlinarith))
+    exact (integral_rem_le ha.le hr).trans (exp_le_one_iff.2 (by linarith [mul_pos ha hr]))
   have hkey : (1 - (a : ℂ)⁻¹ * c) * khat a r ξ = 1 - ∫ t, F t * (rem a r t : ℂ) := by
     linear_combination (-1 : ℂ) * hstep
   have hn : ‖(1 - (a : ℂ)⁻¹ * c) * khat a r ξ‖ ≤ 2 := by
@@ -369,9 +369,9 @@ theorem norm_khat_sub_one_le {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (ξ : ℝ) :
               simpa [hF, mul_comm] using this
             have h2 : |-2 * π * t * ξ| ≤ 4 * π * r * |ξ| := by
               rw [show -2 * π * t * ξ = -(2 * π * t) * ξ by ring, abs_mul, abs_neg,
-                abs_of_nonneg (by nlinarith [ht.1, pi_pos] : (0:ℝ) ≤ 2 * π * t)]
+                abs_of_nonneg (mul_nonneg (mul_nonneg zero_le_two pi_pos.le) ht.1 : (0:ℝ) ≤ 2 * π * t)]
               have := ht.2
-              have : 2 * π * t ≤ 4 * π * r := by nlinarith [pi_pos]
+              have : 2 * π * t ≤ 4 * π * r := by linarith [mul_le_mul_of_nonneg_left this (by positivity : (0:ℝ) ≤ 2 * π)]
               exact mul_le_mul_of_nonneg_right this (abs_nonneg _)
             exact mul_le_mul_of_nonneg_right (h1.trans h2) (kern_nonneg ha.le r t)
           · have : kern a r t = 0 := by
@@ -381,7 +381,7 @@ theorem norm_khat_sub_one_le {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (ξ : ℝ) :
           rw [integral_const_mul]
           have := integral_kern_le_one ha hr
           have : 0 ≤ 4 * π * r * |ξ| := by positivity
-          nlinarith
+          linarith [mul_le_mul_of_nonneg_left (integral_kern_le_one ha hr) this]
   · rw [Complex.norm_real, Real.norm_eq_abs, abs_sub_comm, abs_of_nonneg (by linarith [integral_kern_le_one ha hr])]
     linarith [one_sub_exp_le_integral_kern ha hr]
 
@@ -424,7 +424,7 @@ theorem norm_iteratedDeriv_rem_le {r : ℝ} (hr : 0 < r) (q : ℕ) :
               Real.norm_eq_abs, abs_of_pos (exp_pos _)]
             have h2 : a ^ i ≤ (1 + a) ^ q := (pow_le_pow_left₀ ha (by linarith) i).trans
               (pow_le_pow_right₀ (by linarith) hiq)
-            have h3 : exp (-a * t) ≤ exp (-a * r) := exp_le_exp.2 (by nlinarith [ht.1])
+            have h3 : exp (-a * t) ≤ exp (-a * r) := exp_le_exp.2 (by linarith [mul_le_mul_of_nonneg_left ht.1 ha])
             exact mul_le_mul h2 h3 (exp_pos _).le (by positivity)
           have h4 : ‖iteratedDeriv (q - i) (deriv (cutoff r)) t‖ ≤ ∑ i ∈ Finset.range (q + 1), |C i| :=
             (hC (q - i) t).trans ((le_abs_self _).trans (hS _ hqi))
