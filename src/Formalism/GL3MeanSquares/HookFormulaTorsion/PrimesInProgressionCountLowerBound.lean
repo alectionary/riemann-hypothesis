@@ -97,7 +97,7 @@ private lemma gl2a4_E_lower (θ : ℤ) {β a b W : ℝ} (hβ : 0 < β) (ha : 1 <
       have hn := hw x hx.1 hx.2
       show 0 ≤ (1 - (θ:ℝ) * x ^ (β - 1)) / Real.log x - W * 1 / Real.log b
       rw [mul_one, sub_nonneg, div_le_div_iff₀ hlb hlx]
-      nlinarith [mul_le_mul_of_nonneg_left hlxb hW, mul_le_mul_of_nonneg_right hn hlb.le])
+      linarith [mul_le_mul_of_nonneg_left hlxb hW, mul_le_mul_of_nonneg_right hn hlb.le])
   simp only [sub_self, mul_zero, zero_div, sub_zero] at key
   linarith
 
@@ -184,14 +184,14 @@ private lemma Li_le_three_mul_div_log {Y : ℝ} (hY : 1296 ≤ Y) : Li Y ≤ 3 *
   have h2 := gl2a4_Li_sub_le (a := 2) (b := s) (by norm_num) (by linarith)
   rw [gl2a4_Li_two] at h2
   have hkey' : 2 * (2 * Real.log r) ≤ r ^ 2 * Real.log 2 := by
-    nlinarith [mul_nonneg (by linarith : (0:ℝ) ≤ r - 6) (by linarith : (0:ℝ) ≤ r - 6),
+    linarith [mul_nonneg (by linarith : (0:ℝ) ≤ r - 6) (by linarith : (0:ℝ) ≤ r - 6),
       mul_le_mul_of_nonneg_left hl2.le (sq_nonneg r)]
   have hkey : 2 * Real.log s ≤ s * Real.log 2 := by
     rw [hlogs, ← hr2]
     exact hkey'
   have hA : (s - 2) / Real.log 2 ≤ s ^ 2 / (2 * Real.log s) := by
     rw [div_le_div_iff₀ hl2pos (by linarith)]
-    nlinarith [mul_le_mul_of_nonneg_left hkey hs0]
+    linarith [mul_le_mul_of_nonneg_left hkey hs0]
   have hB : (Y - s) / Real.log s ≤ s ^ 2 / Real.log s :=
     div_le_div_of_nonneg_right (by linarith) hLpos.le
   have hC : s ^ 2 / Real.log s + s ^ 2 / (2 * Real.log s) = 3 * s ^ 2 / (2 * Real.log s) := by
@@ -259,12 +259,12 @@ private lemma gl2a4_weight {θ : ℤ} (hθ : θ = -1 ∨ θ = 0 ∨ θ = 1) {β 
         simp
       have e3 : 0 < Real.exp (-x) := Real.exp_pos _
       have e4 : Real.exp (-x) * (x + 1) ≤ 1 := by
-        nlinarith [mul_le_mul_of_nonneg_left e1 e3.le]
+        linarith [mul_le_mul_of_nonneg_left e1 e3.le]
       have e5 : 1 ≤ x * B ^ 2 := by rwa [div_le_iff₀ hB2pos] at hd'
-      have hy : x ≤ (1 - Real.exp (-x)) * (1 + x) := by nlinarith
+      have hy : x ≤ (1 - Real.exp (-x)) * (1 + x) := by linarith
       have hBx : x ≤ x * B ^ 2 := le_mul_of_one_le_right hx0 hB2
       have key : 1 * (1 + x) ≤ (1 - Real.exp (-x)) * (2 * B ^ 2) * (1 + x) := by
-        nlinarith [mul_le_mul_of_nonneg_left hy (by linarith : (0:ℝ) ≤ 2 * B ^ 2)]
+        linarith [mul_le_mul_of_nonneg_left hy (by linarith : (0:ℝ) ≤ 2 * B ^ 2)]
       have key2 := le_of_mul_le_mul_right key (by linarith : (0:ℝ) < 1 + x)
       rw [div_le_iff₀ (by linarith)]
       linarith
@@ -278,7 +278,7 @@ private lemma gl2a4_weight {θ : ℤ} (hθ : θ = -1 ∨ θ = 0 ∨ θ = 1) {β 
       have g2 : (Z ^ 2) ^ (β - 1) = Z ^ (β - 1) * Z ^ (β - 1) := by
         rw [sq, Real.mul_rpow hZ0.le hZ0.le]
       rw [show ((1:ℤ):ℝ) = 1 by norm_num]
-      nlinarith [mul_self_nonneg (1 - Z ^ (β - 1))]
+      linarith [mul_self_nonneg (1 - Z ^ (β - 1))]
 
 private lemma gl2a4_E_nonneg {θ : ℤ} (hθ : θ = -1 ∨ θ = 0 ∨ θ = 1) {β Y : ℝ} (h1 : 1 / 2 ≤ β)
     (h2 : β < 1) (hY : 4 ≤ Y) : 0 ≤ Emain θ β Y := by
@@ -308,12 +308,12 @@ private lemma gl2a4_rho_mono {C c B X X' : ℝ} (hC : 0 < C) (hc : 0 < c) (hB : 
   have e1 : Real.exp (-c * Real.log X' / Real.log B) ≤ Real.exp (-c * Real.log X / Real.log B) := by
     apply Real.exp_le_exp.mpr
     apply div_le_div_of_nonneg_right _ hlogB.le
-    nlinarith [mul_le_mul_of_nonneg_left hlogle hc.le]
+    linarith [mul_le_mul_of_nonneg_left hlogle hc.le]
   have e2 : Real.exp (-c * Real.sqrt (Real.log X')) ≤ Real.exp (-c * Real.sqrt (Real.log X)) := by
     apply Real.exp_le_exp.mpr
     have := Real.sqrt_le_sqrt hlogle
-    nlinarith [mul_le_mul_of_nonneg_left this hc.le]
-  nlinarith [mul_le_mul_of_nonneg_left e1 hC.le, mul_le_mul_of_nonneg_left e2 hC.le]
+    linarith [mul_le_mul_of_nonneg_left this hc.le]
+  linarith [mul_le_mul_of_nonneg_left e1 hC.le, mul_le_mul_of_nonneg_left e2 hC.le]
 
 private lemma gl2a4_root {B X : ℝ} (hB : 4 ≤ B) (hX : B ^ (60 : ℝ) ≤ X) :
     ∃ u : ℝ, 1024 ≤ u ∧ u ^ 12 = X ∧ Real.sqrt X = u ^ 6 ∧ X ^ ((1 : ℝ) / 3) = u ^ 4 ∧
@@ -397,7 +397,7 @@ private lemma Emain_lower_bound {B β X : ℝ} {θ : ℤ} (hθ : θ = -1 ∨ θ 
     have e : 1 / (2 * B ^ 2) * q / 2 = q / (4 * B ^ 2) := by ring
     rw [e]
     exact div_le_div_of_nonneg_left hq0 (by positivity)
-      (by nlinarith [mul_le_mul_of_nonneg_left hB3 (by positivity : (0:ℝ) ≤ B ^ 2), sq_nonneg B])
+      (by linarith [mul_le_mul_of_nonneg_left hB3 (by positivity : (0:ℝ) ≤ B ^ 2), sq_nonneg B])
   rw [hT]
   linarith
 
@@ -493,7 +493,7 @@ private lemma gl2a4_claim2 {Cr cr B G β X : ℝ} {θ : ℤ} {π₁ π₂ : ℝ 
   have hq0 : 0 ≤ q := by rw [hq]; positivity
   have hlogX' : Real.log X ≤ Real.log X' := Real.log_le_log hX0 hXX'
   have hlogX'2 : Real.log X' ≤ 2 * Real.log X := by
-    have h1 : Real.log X' ≤ Real.log (X ^ 2) := Real.log_le_log hX'0 (by nlinarith only [hX'2, hX1296, mul_le_mul_of_nonneg_left hX1296 hX0.le])
+    have h1 : Real.log X' ≤ Real.log (X ^ 2) := Real.log_le_log hX'0 (by linarith only [hX'2, hX1296, mul_le_mul_of_nonneg_left hX1296 hX0.le])
     rw [Real.log_pow] at h1
     push_cast at h1
     linarith
