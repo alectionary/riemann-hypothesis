@@ -204,14 +204,14 @@ theorem dbar_sub (hf : DifferentiableAt ℝ f z) (hg : DifferentiableAt ℝ g z)
 theorem del_sum {ι : Type*} {t : Finset ι} {A : ι → E → F}
     (h : ∀ i ∈ t, DifferentiableAt ℝ (A i) z) :
     del (fun x => ∑ i ∈ t, A i x) z = ∑ i ∈ t, del (A i) z := by
-  set_option synthInstance.maxHeartbeats 100000 in
-    rw [del, fderiv_fun_sum h]; exact map_sum (linPartCLM (E := E) (F := F)) _ _
+  rw [del, fderiv_fun_sum h]
+  exact map_sum (linPartCLM (E := E) (F := F) : (E →L[ℝ] F) →+ (E →L[ℂ] F)) _ _
 
 theorem dbar_sum {ι : Type*} {t : Finset ι} {A : ι → E → F}
     (h : ∀ i ∈ t, DifferentiableAt ℝ (A i) z) :
     dbar (fun x => ∑ i ∈ t, A i x) z = ∑ i ∈ t, dbar (A i) z := by
-  set_option synthInstance.maxHeartbeats 100000 in
-    rw [dbar, fderiv_fun_sum h]; exact map_sum (antilinPartCLM (E := E) (F := F)) _ _
+  rw [dbar, fderiv_fun_sum h]
+  exact map_sum (antilinPartCLM (E := E) (F := F) : (E →L[ℝ] F) →+ (E →L⋆[ℂ] F)) _ _
 
 theorem del_smul {c : E → ℂ} (hc : DifferentiableAt ℝ c z) (hf : DifferentiableAt ℝ f z) (v : E) :
     del (fun x => c x • f x) z v = c z • del f z v + del c z v • f z := by
