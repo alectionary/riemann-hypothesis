@@ -222,9 +222,14 @@ theorem hasFDerivAt_partialFourierSnd (F : 𝓢(V₁ × (EuclideanSpace ℝ ι),
     refine hb₀.mono' (hcont p).aestronglyMeasurable (Eventually.of_forall fun v ↦ ?_)
     rw [norm_smul, Circle.norm_coe, one_mul]
     exact hb₀F _ _
+  have instSC : SecondCountableTopologyEither (EuclideanSpace ℝ ι)
+      (V₁ × (EuclideanSpace ℝ ι) →L[ℝ] E) :=
+    secondCountableTopologyEither_of_left (EuclideanSpace ℝ ι)
+      (V₁ × (EuclideanSpace ℝ ι) →L[ℝ] E)
   have hm' : AEStronglyMeasurable (fun v : (EuclideanSpace ℝ ι) ↦
       ((𝐞 (-inner ℝ v p.2) : ℂ)) • partialFourierDeriv F (p.1, v)) volume :=
-    hcont'.aestronglyMeasurable
+    @Continuous.aestronglyMeasurable (EuclideanSpace ℝ ι)
+      (V₁ × (EuclideanSpace ℝ ι) →L[ℝ] E) _ _ _ _ _ _ _ instSC hcont'
   have hbd : ∀ᵐ v ∂(volume : Measure (EuclideanSpace ℝ ι)), ∀ q ∈ (Set.univ : Set (V₁ × (EuclideanSpace ℝ ι))),
       ‖((𝐞 (-inner ℝ v q.2) : ℂ)) • partialFourierDeriv F (q.1, v)‖ ≤ b v := by
     refine Eventually.of_forall fun v q _ ↦ ?_
