@@ -161,7 +161,7 @@ theorem isLocalizing_restrict_fromSpec_iff :
       exact ⟨n, (restrict_fromSpec_smul F hU _ (f ^ n) t).symm.trans hn⟩
   · rintro ⟨h₁, h₂⟩
     refine IsLocalizedModule.Away.mk_of_addCommGroup (f := φ) ?_ (fun s ↦ ?_) (fun t ht ↦ ?_)
-    · exact Scheme.Modules.isUnit_algebraMap_end_of_le_basicOpen f le_rfl
+    · exact (Scheme.Modules.isUnit_algebraMap_end_of_le_basicOpen f le_rfl :)
     · obtain ⟨n, t, ht⟩ := h₁ s
       exact ⟨n, t, (restrict_fromSpec_smul F hU _ (f ^ n) s).trans ht⟩
     · obtain ⟨n, hn⟩ := h₂ t ht
@@ -263,8 +263,8 @@ theorem isQuasicoherent_of_restrict {ι : Type*} {Y : ι → Scheme.{u}} (g : �
       Scheme.Modules.restrictFunctor l ≅ Scheme.Modules.restrictFunctor hU.fromSpec :=
     (Scheme.Modules.restrictFunctorComp _ _).symm ≪≫ Scheme.Modules.restrictFunctorCongr hl
   have := h i
-  exact (SheafOfModules.isQuasicoherent (Spec Γ(X, U)).ringCatSheaf).prop_of_iso (iso.app F)
-    (inferInstanceAs ((F.restrict (g i)).restrict l).IsQuasicoherent)
+  exact ((SheafOfModules.isQuasicoherent (Spec Γ(X, U)).ringCatSheaf).prop_of_iso (iso.app F)
+    (inferInstanceAs ((F.restrict (g i)).restrict l).IsQuasicoherent) :)
 
 section Elementwise
 
